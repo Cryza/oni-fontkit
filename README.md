@@ -1,4 +1,10 @@
-# fontkit
+# oni-fontkit
+
+This is a fork of the awesome font engine [fontkit](https://github.com/foliojs/fontkit) which was optimized for usage within the [Oni](https://github.com/onivim/oni) editor. The fork exists because we need to remove unrequired but security-critical code from the package while at the same time adding a few tweaks to make the logic fit our use-cases.
+
+If you did not come here as an Oni contributor, the [original repo](https://github.com/foliojs/fontkit) is probably what you're looking for.
+
+> The following paragraphs need to be updated once the first adapted version is published
 
 Fontkit is an advanced font engine for Node and the browser, used by [PDFKit](https://github.com/devongovett/pdfkit). It supports many font formats, advanced glyph substitution and layout features, glyph path extraction, color emoji glyphs, font subsetting, and more.
 
