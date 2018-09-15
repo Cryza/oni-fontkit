@@ -1,7 +1,7 @@
 import { cache } from '../decorators';
 import Path from './Path';
-import unicode from 'unicode-properties';
 import StandardNames from './StandardNames';
+import OTProcessor from '../opentype/OTProcessor';
 
 /**
  * Glyph objects represent a glyph in the font. They have various properties for accessing metrics and
@@ -28,9 +28,20 @@ export default class Glyph {
     this.codePoints = codePoints;
     this._font = font;
 
-    // TODO: get this info from GDEF if available
-    this.isMark = this.codePoints.length > 0 && this.codePoints.every(unicode.isMark);
-    this.isLigature = this.codePoints.length > 1;
+    let GDEF = this._font.GDEF;
+    if (GDEF && GDEF.glyphClassDef) {
+      // TODO: clean this up
+      let classID = OTProcessor.prototype.getClassID(id, GDEF.glyphClassDef);
+      this.isBase = classID === 1;
+      this.isLigature = classID === 2;
+      this.isMark = classID === 3;
+      this.markAttachmentType = GDEF.markAttachClassDef ? OTProcessor.prototype.getClassID(id, GDEF.markAttachClassDef) : 0;
+    } else {
+      this.isMark = false;
+      this.isBase = true;
+      this.isLigature = this.codePoints.length > 1;
+      this.markAttachmentType = 0;
+    }
   }
 
   _getPath() {
@@ -190,23 +201,5 @@ export default class Glyph {
   @cache
   get name() {
     return this._getName();
-  }
-
-  /**
-   * Renders the glyph to the given graphics context, at the specified font size.
-   * @param {CanvasRenderingContext2d} ctx
-   * @param {number} size
-   */
-  render(ctx, size) {
-    ctx.save();
-
-    let scale = 1 / this._font.head.unitsPerEm * size;
-    ctx.scale(scale, scale);
-
-    let fn = this.path.toFunction();
-    fn(ctx);
-    ctx.fill();
-
-    ctx.restore();
   }
 }

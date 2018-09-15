@@ -4,7 +4,6 @@ import fontkit from './base';
 import Directory from './tables/directory';
 import tables from './tables';
 import CmapProcessor from './CmapProcessor';
-import LayoutEngine from './layout/LayoutEngine';
 import TTFGlyph from './glyph/TTFGlyph';
 import CFFGlyph from './glyph/CFFGlyph';
 import SBIXGlyph from './glyph/SBIXGlyph';
@@ -13,6 +12,9 @@ import GlyphVariationProcessor from './glyph/GlyphVariationProcessor';
 import TTFSubset from './subset/TTFSubset';
 import CFFSubset from './subset/CFFSubset';
 import BBox from './glyph/BBox';
+import * as AATFeatureMap from './aat/AATFeatureMap';
+import AATMorxProcessor from './aat/AATMorxProcessor';
+import GSUBProcessor from './opentype/GSUBProcessor';
 
 /**
  * This is the base class for all SFNT-based font formats in fontkit.
@@ -41,6 +43,13 @@ export default class TTFFont {
           get: this._getTable.bind(this, table)
         });
       }
+    }
+
+    // Choose a font processor. We ignore positioning in GPOS since this will not be relevant in Oni's grid
+    if (this.GSUB) {
+      this._processor = new GSUBProcessor(this, this.GSUB);
+    } else if (this.morx) {
+      this._processor = new AATMorxProcessor(this);
     }
   }
 
@@ -331,31 +340,23 @@ export default class TTFFont {
     return glyphs;
   }
 
-  @cache
-  get _layoutEngine() {
-    return new LayoutEngine(this);
-  }
-
   /**
-   * Returns a GlyphRun object, which includes an array of Glyphs and GlyphPositions for the given string.
+   * Performs in-place OpenType/AAT substitutions on an array of Glyphs as defined in the font
+   * for the given (mapped) OpenType features
    *
-   * @param {string} string
-   * @param {string[]} [userFeatures]
-   * @param {string} [script]
-   * @param {string} [language]
-   * @param {string} [direction]
-   * @return {GlyphRun}
+   * @param {Glyph[]} glyphs
+   * @param {string[]} features
+   * @return {void}
    */
-  layout(string, userFeatures, script, language, direction) {
-    return this._layoutEngine.layout(string, userFeatures, script, language, direction);
-  }
-
-  /**
-   * Returns an array of strings that map to the given glyph id.
-   * @param {number} gid - glyph id
-   */
-  stringsForGlyph(gid) {
-    return this._layoutEngine.stringsForGlyph(gid);
+  applySubstitutionFeatures(glyphs, features) {
+    if (this._processor) {
+      if (this._processor instanceof GSUBProcessor) {
+        return this._processor.applyFeatures(features, glyphs, null);
+      } else if (this._processor instanceof AATMorxProcessor) {
+        // TODO add a return value here
+        return this._processor.process(glyphs, AATFeatureMap.mapOTToAAT(features));
+      }
+    }
   }
 
   /**
@@ -367,11 +368,20 @@ export default class TTFFont {
    * @type {string[]}
    */
   get availableFeatures() {
-    return this._layoutEngine.getAvailableFeatures();
+    return this.getAvailableFeatures();
   }
 
   getAvailableFeatures(script, language) {
-    return this._layoutEngine.getAvailableFeatures(script, language);
+    if (this._processor) {
+      if (this._processor instanceof AATMorxProcessor) {
+        return AATFeatureMap.mapAATToOT(this._processor.getSupportedFeatures());
+      } else if (this._processor instanceof GSUBProcessor) {
+        this._processor.selectScript(script, language);
+        return Object.keys(this._processor.features);
+      }
+    }
+
+    return [];
   }
 
   _getBaseGlyph(glyph, characters = []) {

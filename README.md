@@ -4,18 +4,20 @@ This is a fork of the awesome font engine [fontkit](https://github.com/foliojs/f
 
 If you did not come here as an Oni contributor, the [original repo](https://github.com/foliojs/fontkit) is probably what you're looking for.
 
-> The following paragraphs need to be updated once the first adapted version is published
-
-Fontkit is an advanced font engine for Node and the browser, used by [PDFKit](https://github.com/devongovett/pdfkit). It supports many font formats, advanced glyph substitution and layout features, glyph path extraction, color emoji glyphs, font subsetting, and more.
+The most notable adaptations are:
+- No more layout-related logic since it involves heavy logic and bundle size additions which are not required in Oni
+- No more `Glyph.render` method since the implementation was considered a security risk in the context of our electron application
+- Added Typescript definitions
+- Additional return values and a new method `Font.applySubstitutionFeatures` for applying context-based substitutions and then extracting the metadata
 
 ## Features
 
 * Suports TrueType (.ttf), OpenType (.otf), WOFF, WOFF2, TrueType Collection (.ttc), and Datafork TrueType (.dfont) font files
 * Supports mapping characters to glyphs, including support for ligatures and other advanced substitutions (see below)
-* Supports reading glyph metrics and laying out glyphs, including support for kerning and other advanced layout features (see below)
-* Advanced OpenType features including glyph substitution (GSUB) and positioning (GPOS)
+* ~~Supports reading glyph metrics and laying out glyphs, including support for kerning and other advanced layout features (see below)~~
+* Advanced OpenType features including glyph substitution (GSUB) ~~and positioning (GPOS)~~
 * Apple Advanced Typography (AAT) glyph substitution features (morx table)
-* Support for getting glyph vector paths and converting them to SVG paths, or rendering them to a graphics context
+* Support for getting glyph vector paths and converting them to SVG paths, ~~or rendering them to a graphics context~~
 * Supports TrueType (glyf) and PostScript (CFF) outlines
 * Support for color glyphs (e.g. emoji), including Apple’s SBIX table, and Microsoft’s COLR table
 * Support for AAT variation glyphs, allowing for nearly infinite design control over weight, width, and other axes.
@@ -33,9 +35,14 @@ var fontkit = require('fontkit');
 // open a font synchronously
 var font = fontkit.openSync('font.ttf');
 
-// layout a string, using default shaping features.
-// returns a GlyphRun, describing glyphs and positions.
-var run = font.layout('hello world!');
+// map a string to the corresponding Glyphs.
+// Does not perform advanced features based on context yet
+var glyphs = font.glyphsForString('hello world!');
+
+// apply contextual substitution on the glyphs
+// the returned array contains a contextGroupId for each glyph which
+// can be used to group the glyphs together based on the contexts they triggered
+var contextGroupIds = font.applySubstitutionFeatures(glyphs, ['calt'])
 
 // get an SVG path for a glyph
 var svg = run.glyphs[0].path.toSVG();
@@ -114,7 +121,7 @@ Returns whether there is glyph in the font for the given unicode code point.
 
 #### `font.glyphsForString(string)`
 
-This method returns an array of Glyph objects for the given string. This is only a one-to-one mapping from characters
+This method returns an array of `Glyph` objects for the given string. This is only a one-to-one mapping from characters
 to glyphs. For most uses, you should use `font.layout` (described below), which provides a much more advanced mapping
 supporting AAT and OpenType shaping.
 
@@ -122,15 +129,11 @@ supporting AAT and OpenType shaping.
 
 Fontkit includes several methods for accessing glyph metrics and performing layout, including support for kerning and other advanced OpenType positioning adjustments.
 
-#### `font.widthOfGlyph(glyph_id)`
+#### `font.applySubstitutionFeatures(string, features = [])`
 
-Returns the advance width (described above) for a single glyph id.
+This method performs in-place substitutions on the given array of glyphs. The substitutions are acrivated by passing the corresponding feature tags which are mapped in the font.
 
-#### `font.layout(string, features = [])`
-
-This method returns a `GlyphRun` object, which includes an array of `Glyph`s and `GlyphPosition`s for the given string.
-`Glyph` objects are described below. `GlyphPosition` objects include 4 properties: `xAdvance`, `yAdvance`, `xOffset`,
-and `yOffset`.
+Returns an array of context group IDs per glyph which can be used to backtrack which `Glyph`s were involved together in context-based substitutions.
 
 The `features` parameter is an array of [OpenType feature tags](https://www.microsoft.com/typography/otspec/featuretags.htm) to be applied
 in addition to the default set. If this is an AAT font, the OpenType feature tags are mapped to AAT features.
@@ -197,7 +200,7 @@ You do not create glyph objects directly. They are created by various methods on
 
 ### `glyph.render(ctx, size)`
 
-Renders the glyph to the given graphics context, at the specified font size.
+Renders the COLR or SBIX glyph to the given graphics context, at the specified font size.
 
 ### Color glyphs (e.g. emoji)
 
@@ -234,10 +237,6 @@ Adds a bezier curve to the path from the current point to the given x, y coordin
 ### `path.closePath()`
 
 Closes the current sub-path by drawing a straight line back to the starting point.
-
-### `path.toFunction()`
-
-Compiles the path to a JavaScript function that can be applied with a graphics context in order to render the path.
 
 ### `path.toSVG()`
 
