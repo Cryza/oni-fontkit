@@ -1,6 +1,6 @@
 {
   "name": "oni-fontkit",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "An advanced font engine for Node and the browser - adapted to the requirements of the Oni editor",
   "keywords": [
     "opentype",
@@ -29,12 +29,21 @@
     "base.js",
     "base.js.map",
     "index.js",
-    "index.js.map"
+    "index.js.map",
+    "index.d.ts"
   ],
   "author": "Devon Govett <devongovett@gmail.com>",
   "contributors": [
     "Manuel Hornung <manuel@hornung.in>"
   ],
+  "homepage": "https://github.com/Cryza/oni-fontkit#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cryza/oni-fontkit.git"
+  },
+  "bugs":{
+    "url": "https://github.com/Cryza/oni-fontkit/issues"
+  },
   "license": "MIT",
   "dependencies": {
     "babel-runtime": "^6.11.6",
