@@ -1,6 +1,6 @@
 {
   "name": "oni-fontkit",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "An advanced font engine for Node and the browser - adapted to the requirements of the Oni editor",
   "keywords": [
     "opentype",
@@ -41,7 +41,7 @@
     "type": "git",
     "url": "git+https://github.com/Cryza/oni-fontkit.git"
   },
-  "bugs":{
+  "bugs": {
     "url": "https://github.com/Cryza/oni-fontkit/issues"
   },
   "license": "MIT",
