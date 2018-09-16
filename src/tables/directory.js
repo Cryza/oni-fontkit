@@ -1,4 +1,4 @@
-import r from 'restructure';
+import r from 'oni-restructure';
 import Tables from './';
 
 let TableEntry = new r.Struct({

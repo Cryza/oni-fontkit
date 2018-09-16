@@ -1,4 +1,4 @@
-import r from 'restructure';
+import r from 'oni-restructure';
 
 class UnboundedArrayAccessor {
   constructor(type, stream, parent) {

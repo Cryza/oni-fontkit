@@ -1,4 +1,4 @@
-import r from 'restructure';
+import r from 'oni-restructure';
 
 // maxiumum profile
 export default new r.Struct({

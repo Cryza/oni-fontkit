@@ -1,7 +1,7 @@
 import isEqual from 'deep-equal';
-import r from 'restructure';
+import r from 'oni-restructure';
 import CFFOperand from './CFFOperand';
-import { PropertyDescriptor } from 'restructure/src/utils';
+import { PropertyDescriptor } from 'oni-restructure/src/utils';
 
 export default class CFFDict {
   constructor(ops = []) {

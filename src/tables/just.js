@@ -1,4 +1,4 @@
-import r from 'restructure';
+import r from 'oni-restructure';
 import { LookupTable, StateTable1 } from './aat';
 
 let ClassTable = new r.Struct({

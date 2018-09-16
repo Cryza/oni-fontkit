@@ -1,4 +1,4 @@
-import r from 'restructure';
+import r from 'oni-restructure';
 import {ScriptList, FeatureList, LookupList, Coverage, ClassDef, Device, Context, ChainingContext} from './opentype';
 import {FeatureVariations} from './variations';
 

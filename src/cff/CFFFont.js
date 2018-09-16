@@ -1,4 +1,4 @@
-import r from 'restructure';
+import r from 'oni-restructure';
 import CFFIndex from './CFFIndex';
 import CFFTop from './CFFTop';
 import CFFPrivateDict from './CFFPrivateDict';

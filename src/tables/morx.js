@@ -1,4 +1,4 @@
-import r from 'restructure';
+import r from 'oni-restructure';
 import { UnboundedArray, LookupTable, StateTable } from './aat';
 
 let LigatureData = {

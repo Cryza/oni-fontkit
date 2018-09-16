@@ -1,4 +1,4 @@
-import r from 'restructure';
+import r from 'oni-restructure';
 import { LookupTable } from './aat';
 
 let BslnSubtable = new r.VersionedStruct('format', {

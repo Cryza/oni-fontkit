@@ -1,4 +1,4 @@
-import r from 'restructure';
+import r from 'oni-restructure';
 import { cache } from './decorators';
 import fontkit from './base';
 import Directory from './tables/directory';

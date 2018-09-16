@@ -2,7 +2,7 @@ import fontkit from '../src';
 import assert from 'assert';
 import concat from 'concat-stream';
 import CFFFont from '../src/cff/CFFFont';
-import r from 'restructure';
+import r from 'oni-restructure';
 import CFFGlyph from '../src/glyph/CFFGlyph';
 import fs from 'fs';
 
@@ -28,10 +28,10 @@ describe('font subsetting', function() {
         done();
       }));
     });
-    
+
     it('should re-encode variation glyphs', function(done) {
       if (!fs.existsSync('/Library/Fonts/Skia.ttf')) return done();
-      
+
       let font = fontkit.openSync('/Library/Fonts/Skia.ttf', 'Bold');
       let subset = font.createSubset();
       for (let glyph of font.glyphsForString('e')) {

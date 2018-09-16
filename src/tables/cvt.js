@@ -1,4 +1,4 @@
-import r from 'restructure';
+import r from 'oni-restructure';
 
 // An array of predefined values accessible by instructions
 export default new r.Struct({

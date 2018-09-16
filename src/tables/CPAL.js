@@ -1,4 +1,4 @@
-import r from 'restructure';
+import r from 'oni-restructure';
 
 let ColorRecord = new r.Struct({
   blue: r.uint8,
