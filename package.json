@@ -1,6 +1,6 @@
 {
   "name": "oni-fontkit",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "An advanced font engine for Node and the browser - adapted to the requirements of the Oni editor",
   "keywords": [
     "opentype",
