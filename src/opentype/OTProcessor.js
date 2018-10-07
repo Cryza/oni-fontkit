@@ -327,7 +327,7 @@ export default class OTProcessor {
     const pos = this.glyphIterator.index
 
     const contextGroupsToMerge = this.contextGroups
-      .slice(pos + startOffset, contextGroupLength);
+      .slice(pos + startOffset, pos + contextGroupLength);
     this.mergeContextGroups(contextGroupsToMerge);
   }
 
